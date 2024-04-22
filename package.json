@@ -30,5 +30,8 @@
     "and implemented functionality. The actual core themes",
     "precise keywords",
     "and the truly intended audience may differ based on additional context or project documentation not provided with just the source code."
-  ]
+  ],
+  "dependencies": {
+    "nextra": "^2.13.4"
+  }
 }
