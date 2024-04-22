@@ -1,3 +1,7 @@
+import numpy as np
+from transformers import AutoTokenizer, AutoModel
+import torch
+import numpy as np        
 import logging
 import re
 import numpy as np
@@ -15,6 +19,12 @@ from unstructured.partition.auto import partition
 from transformers import AutoTokenizer, AutoModel
 import torch
 from llama_index.core import VectorStoreIndex
+import uuid
+import logging
+from llama_index.core.schema import TextNode  # Assuming TextNode is the correct instantiable class
+from llama_index.embeddings.openai import OpenAIEmbedding
+from llama_index.core import VectorStoreIndex
+from llama_index.core.data_structs.data_structs import IndexDict
 from llama_index.core.vector_stores.types import (
     DEFAULT_PERSIST_DIR,
     DEFAULT_PERSIST_FNAME,
@@ -25,6 +35,7 @@ from llama_index.core.vector_stores.types import (
     VectorStoreQueryMode,
     VectorStoreQueryResult,
 )
+
 # Initialize tokenizer and model for encoding queries
 tokenizer = AutoTokenizer.from_pretrained("sentence-transformers/all-MiniLM-L6-v2")
 model = AutoModel.from_pretrained("sentence-transformers/all-MiniLM-L6-v2")
@@ -72,13 +83,6 @@ def load_documents(file_path):
     docs = [Document(text=str(el), metadata={"source": file_path}) for el in elements]
     logging.info(f"Loaded {len(docs)} documents from {file_path}")
     return docs
-
-import uuid
-import logging
-from llama_index.core.schema import TextNode  # Assuming TextNode is the correct instantiable class
-from llama_index.embeddings.openai import OpenAIEmbedding
-from llama_index.core import VectorStoreIndex
-from llama_index.core.data_structs.data_structs import IndexDict
 
 # Initialize the VectorStoreIndex with the OpenAIEmbedding model
 vector_store = VectorStoreIndex(
@@ -144,9 +148,6 @@ class RerankModule(dspy.Module):
         print(f"Initial Score Type: {type(initial_score)}")  # Debugging line
         reranked_score = initial_score + len(context)  # Simplistic reranking logic
         return reranked_score
-
-
-import numpy as np
 
 def calculate_ndcg(predicted_relevance, true_relevance, k=10):
     """
@@ -284,16 +285,6 @@ class RerankingOptimizer(dspy.Module):
             logging.error(f"Failed to optimize reranking: {str(e)}")
             # Add additional debugging or error handling code here
             return None
-        
-import dspy
-import logging
-import dspy
-import logging
-
-import dspy
-import logging
-
-
 
 class QueryPlanningSignature(dspy.Signature):
     query = dspy.InputField(desc="User query")
@@ -310,14 +301,6 @@ class QueryPlanner(dspy.Module):
         context = f"Query: {query}\nAgents: {agent_ids}\nHistorical Data: {historical_data if historical_data else 'No historical data'}"
         prediction = self.process_query(query=query, agent_ids=agent_ids, historical_data=historical_data)
         return prediction.selected_agents if hasattr(prediction, 'selected_agents') else []
-    
-import numpy as np
-from transformers import AutoTokenizer, AutoModel
-import torch
-
-# Initialize tokenizer and model for encoding queries
-tokenizer = AutoTokenizer.from_pretrained("sentence-transformers/all-MiniLM-L6-v2")
-model = AutoModel.from_pretrained("sentence-transformers/all-MiniLM-L6-v2")
 
 class DocumentAgent(dspy.Module):
     def __init__(self, document_id, content, qdrant_client, collection_name):
@@ -411,6 +394,7 @@ class DocumentAgent(dspy.Module):
         
         logging.debug(f"Evaluation score: {score}")
         return score
+        
     def answer_query(self, query):
         """ Uses the evaluate method to process the query and fetch the final answer from the LM """
         # Break down the query into sub-queries
@@ -549,9 +533,6 @@ class DocumentAgent(dspy.Module):
         
         return answer
 
-
-
-
 class MasterAgent(dspy.Module):
     def __init__(self, document_agents, reranker, query_planner):
         super().__init__()
@@ -582,8 +563,6 @@ class MasterAgent(dspy.Module):
         final_answer = self.document_agents[top_doc_id].answer_query(query)
         
         return final_answer
-
-
 
 if __name__ == "__main__":
     logging.basicConfig(filename='app.log', filemode='w', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s', encoding='utf-8')
