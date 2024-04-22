@@ -1,0 +1,45 @@
+import { Callout, Steps, Step } from "nextra-theme-docs";
+
+# Introduction
+
+Welcome to the documentation for the **Multi-Document Agent Q&A System**, a powerful and innovative framework designed to process and derive insights from large corpuses of textual data. This system combines advanced techniques from Natural Language Processing (NLP), Information Retrieval, and Knowledge Management to provide intelligent question-answering capabilities.
+
+At its core, the Multi-Document Agent Q&A System employs a distributed knowledge fabric that intelligently partitions textual documents into semi-autonomous agents called [DocumentAgents](/system-architecture/document-agents). These agents encapsulate the content and semantic essence of their designated document partitions through advanced [vector embeddings](/system-architecture/vector-embeddings), enabling efficient semantic searches and content retrieval.
+
+The system's architecture is designed to handle complex queries and retrieve the most relevant information from the document corpus. The [MasterAgent](/query-processing/master-agent) orchestrates the query processing flow, utilizing the [QueryPlanner](/query-processing/query-planner) to strategically engage the most relevant DocumentAgents based on the query's content and historical performance data. The [RerankModule](/query-processing/reranking-module) then refines the relevance scores contextually, enhancing the accuracy and precision of the retrieved information.
+
+To optimize the reranking process, the system employs the innovative [BootstrapFewShotWithRandomSearch](/optimization-techniques/bootstrapped-few-shot-learning) technique, which dynamically adjusts the reranking model by testing various configurations in a simulated environment. The accuracy of the reranked results is measured against true relevance scores using a [custom metric based on mean squared error (MSE)](/optimization-techniques/custom-metric-mean-squared-error).
+
+<Callout emoji="✨">
+The Multi-Document Agent Q&A System is designed to be highly scalable and adaptable to various domains and use cases. Whether you're building enterprise knowledge bases, documentation assistants, or intelligent search applications, this system provides a solid foundation for processing and querying large volumes of textual data.
+</Callout>
+
+## Key Features
+
+- Distributed knowledge fabric with semi-autonomous DocumentAgents
+- Advanced vector embeddings for efficient semantic searches
+- Intelligent query processing and relevance reranking
+- Optimization through bootstrapped few-shot learning
+- Scalable and adaptable architecture
+
+## Getting Started
+
+To get started with the Multi-Document Agent Q&A System, follow these steps:
+
+<Steps>
+
+### Step 1
+
+Familiarize yourself with the [system architecture](/system-architecture) and its key components, such as DocumentAgents, vector embeddings, and the Qdrant vector database.
+
+### Step 2
+
+Understand the [query processing flow](/query-processing) and the roles of the MasterAgent, QueryPlanner, and RerankModule in retrieving relevant information.
+
+### Step 3
+
+Explore the [optimization techniques](/optimization-techniques) employed in the system, including bootstrapped few-shot learning and the custom MSE metric.
+
+</Steps>
+
+By the end of this documentation, you'll have a deep understanding of the Multi-Document Agent Q&A System and how it can be leveraged to build powerful question-answering applications across various domains.

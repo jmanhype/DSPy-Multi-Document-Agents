@@ -1,0 +1,5 @@
+{
+  "master-agent": "Master Agent",
+  "query-planner": "Query Planner",
+  "reranking-module": "Reranking Module"
+}

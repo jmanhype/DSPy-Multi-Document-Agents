@@ -1,0 +1,37 @@
+import { Callout, Steps, Step } from "nextra-theme-docs";
+
+# Optimization Techniques
+
+The Multi-Document Agent Q&A System employs advanced optimization techniques to enhance the accuracy and performance of the query processing pipeline. These techniques play a crucial role in refining the relevance scores and ensuring that the most pertinent information is retrieved from the distributed knowledge fabric.
+
+<Callout type="info">
+Optimization is an iterative process that involves continuously evaluating and adjusting the system's parameters to achieve the best possible results.
+</Callout>
+
+The primary optimization techniques used in this system are:
+
+1. [Bootstrapped Few-Shot Learning](/optimization-techniques/bootstrapped-few-shot-learning): This technique utilizes the BootstrapFewShotWithRandomSearch method to optimize the reranking process by testing various configurations in a simulated environment. It enables the system to learn from a limited number of examples and generalize to new queries effectively.
+
+2. [Custom Metric: Mean Squared Error](/optimization-techniques/custom-metric-mean-squared-error): The system uses a custom metric, specifically the Mean Squared Error (MSE), to measure the accuracy of the reranked results against the true relevance scores. By minimizing the MSE, the system can optimize the reranking process and improve the overall quality of the retrieved information.
+
+These optimization techniques work in tandem with the other components of the system, such as the [DocumentAgents](/system-architecture/document-agents), [Vector Embeddings](/system-architecture/vector-embeddings), and the [Qdrant Vector Database](/system-architecture/qdrant-vector-database), to deliver highly accurate and relevant query results.
+
+<Steps>
+### Step 1: Initial Retrieval
+
+The [MasterAgent](/query-processing/master-agent) receives a query and engages the [QueryPlanner](/query-processing/query-planner) to select the most relevant [DocumentAgents](/system-architecture/document-agents) based on the query content and historical performance data.
+
+### Step 2: Reranking
+
+The selected [DocumentAgents](/system-architecture/document-agents) provide their initial responses, which are then processed by the [RerankModule](/query-processing/reranking-module) to refine the relevance scores based on the query context.
+
+### Step 3: Optimization
+
+The [Bootstrapped Few-Shot Learning](/optimization-techniques/bootstrapped-few-shot-learning) technique is applied to optimize the reranking process by testing various configurations and evaluating their performance using the [Custom Metric: Mean Squared Error](/optimization-techniques/custom-metric-mean-squared-error).
+
+### Step 4: Result Retrieval
+
+The optimized reranking process is used to retrieve the most relevant information from the distributed knowledge fabric, ensuring high accuracy and precision in the query results.
+</Steps>
+
+By leveraging these optimization techniques, the Multi-Document Agent Q&A System can continuously improve its understanding and processing of complex queries, providing users with the most accurate and pertinent information available.

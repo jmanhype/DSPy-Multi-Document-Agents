@@ -1,0 +1,60 @@
+import { Callout, Steps, Step } from "nextra-theme-docs";
+
+# Query Planner
+
+The Query Planner is a crucial component of the Multi-Document Agent Q&A System, responsible for strategically selecting the most relevant document agents to engage in answering a given query. By analyzing the query's content and leveraging historical performance data, the Query Planner optimizes the query processing flow, ensuring that the system efficiently retrieves accurate and relevant information.
+
+## How it Works
+
+The Query Planner follows a systematic approach to determine which document agents should be involved in answering a query:
+
+<Steps>
+
+### Step 1: Query Analysis
+
+The Query Planner receives the user's query and performs a thorough analysis of its content. This analysis may involve techniques such as:
+
+- Tokenization: Breaking down the query into individual words or tokens.
+- Stopword Removal: Eliminating common words that do not contribute to the query's meaning.
+- Named Entity Recognition (NER): Identifying and categorizing named entities (e.g., persons, organizations, locations) mentioned in the query.
+- Keyword Extraction: Identifying the most important keywords or phrases that represent the core intent of the query.
+
+### Step 2: Agent Selection
+
+Based on the query analysis, the Query Planner selects the document agents that are most likely to provide relevant information for answering the query. The selection process may consider factors such as:
+
+- Topic Relevance: Matching the query's keywords and entities with the topics or subjects covered by each document agent.
+- Historical Performance: Analyzing the past performance of document agents in handling similar queries and prioritizing those with a track record of providing accurate and relevant responses.
+- Load Balancing: Distributing the query load across multiple document agents to ensure efficient resource utilization and optimal response times.
+
+</Steps>
+
+The Query Planner's agent selection strategy can be represented using the following pseudocode:
+
+```python
+def select_agents(query, document_agents, historical_data):
+    query_keywords = extract_keywords(query)
+    query_entities = extract_entities(query)
+    
+    relevant_agents = []
+    for agent in document_agents:
+        if agent.topics_covered(query_keywords, query_entities):
+            relevant_agents.append(agent)
+    
+    selected_agents = rank_agents(relevant_agents, historical_data)
+    return selected_agents
+```
+
+<Callout type="info">
+The Query Planner's agent selection algorithm can be further enhanced by incorporating machine learning techniques, such as relevance feedback or reinforcement learning, to continuously improve its decision-making based on user interactions and feedback.
+</Callout>
+
+## Integration with Other Components
+
+The Query Planner works in close coordination with other components of the Multi-Document Agent Q&A System:
+
+- **[Master Agent](/query-processing/master-agent)**: The Master Agent invokes the Query Planner to determine the appropriate document agents for each query. It provides the query and historical performance data to the Query Planner and receives the list of selected agents in return.
+- **[Document Agents](/system-architecture/document-agents)**: The Query Planner selects the most relevant Document Agents based on their expertise and past performance. It ensures that the selected agents are well-suited to provide accurate and relevant information for the given query.
+- **[Reranking Module](/query-processing/reranking-module)**: After the selected Document Agents provide their initial responses, the Reranking Module fine-tunes the relevance scores based on additional context and query-specific factors. The Query Planner's selection decisions directly impact the effectiveness of the reranking process.
+
+By employing intelligent agent selection strategies, the Query Planner significantly improves the efficiency and accuracy of the Multi-Document Agent Q&A System, enabling it to deliver high-quality answers to user queries.

@@ -1,0 +1,62 @@
+import { Callout, Steps, Step } from "nextra-theme-docs";
+
+# Vector Embeddings
+
+Vector embeddings play a crucial role in the Multi-Document Agent Q&A System by enabling efficient semantic searches and content retrieval. In this section, we'll dive into the concept of vector embeddings and how they are utilized within the system.
+
+## What are Vector Embeddings?
+
+Vector embeddings are dense, high-dimensional representations of textual data that capture the semantic meaning and relationships between words, sentences, or documents. Each word or document is mapped to a fixed-length vector in a continuous vector space, where semantically similar entities are positioned closer to each other.
+
+<Callout type="info">
+Vector embeddings allow for efficient similarity comparisons and enable the system to understand the semantic relatedness between queries and documents.
+</Callout>
+
+## How are Vector Embeddings Generated?
+
+The process of generating vector embeddings involves the following steps:
+
+<Steps>
+### Step 1: Tokenization
+
+The text data is tokenized into individual words or subwords, depending on the chosen tokenization strategy (e.g., word-level, subword-level, or character-level tokenization).
+
+### Step 2: Embedding Model
+
+An embedding model, such as Word2Vec, GloVe, or BERT, is used to generate vector representations for each token. These models are pre-trained on large text corpora to capture the semantic relationships between words.
+
+### Step 3: Aggregation
+
+The token-level embeddings are aggregated to obtain a single vector representation for the entire document. Common aggregation methods include averaging the token embeddings or using more advanced techniques like attention mechanisms.
+</Steps>
+
+Here's an example of how vector embeddings are generated using the `DocumentAgent` class:
+
+```python
+def extract_answer(self, query):
+    processed_query = self.preprocess_text(query)
+    processed_content = self.preprocess_text(self.content)
+
+    relevant_parts = self.find_relevant_parts(processed_query, processed_content)
+    answer = self.construct_answer(relevant_parts)
+
+    return answer
+```
+
+In this code snippet, the `extract_answer` method preprocesses the query and document content, finds the relevant parts based on their vector embeddings, and constructs the answer using the relevant parts.
+
+## Advantages of Vector Embeddings
+
+Vector embeddings offer several advantages in the context of the Multi-Document Agent Q&A System:
+
+- **Semantic Similarity**: Vector embeddings capture the semantic similarity between queries and documents, enabling the system to retrieve the most relevant information based on the query's intent.
+
+- **Efficient Retrieval**: By representing documents as fixed-length vectors, the system can efficiently perform similarity searches and retrieve relevant documents using techniques like cosine similarity or Euclidean distance.
+
+- **Language Independence**: Vector embeddings can be generated for text data in different languages, making the system language-agnostic and adaptable to multilingual document collections.
+
+## Conclusion
+
+Vector embeddings are a fundamental component of the Multi-Document Agent Q&A System, enabling efficient semantic searches and content retrieval. By representing textual data as dense vectors, the system can effectively understand the semantic relationships between queries and documents, leading to more accurate and relevant answers.
+
+For more information on how vector embeddings are utilized in the system architecture, refer to the [Qdrant Vector Database](/system-architecture/qdrant-vector-database) section.

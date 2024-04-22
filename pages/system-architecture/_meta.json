@@ -1,0 +1,5 @@
+{
+  "document-agents": "Document Agents",
+  "vector-embeddings": "Vector Embeddings",
+  "qdrant-vector-database": "Qdrant Vector Database"
+}

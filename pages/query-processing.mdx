@@ -1,0 +1,41 @@
+import { Callout, Steps, Step } from "nextra-theme-docs";
+
+# Query Processing
+
+The query processing flow in the Multi-Document Agent Q&A System is a critical component that enables the system to understand and respond to user queries effectively. It involves several key components working together to analyze the query, retrieve relevant information from the document agents, and generate an accurate and comprehensive response.
+
+<Steps>
+
+### Step 1: Query Analysis
+
+When a user submits a query, the first step is to analyze and understand the query's intent and structure. The system employs advanced natural language processing (NLP) techniques to break down the query into its constituent parts, identify key entities, and determine the type of information being requested.
+
+### Step 2: Agent Selection
+
+Once the query has been analyzed, the [Master Agent](/query-processing/master-agent) takes charge of the query processing flow. It utilizes the [Query Planner](/query-processing/query-planner) to strategically select the most relevant [Document Agents](/system-architecture/document-agents) based on the query's content and historical performance data.
+
+The Query Planner employs sophisticated algorithms to match the query's keywords and intent with the specialized knowledge domains of each Document Agent. It also considers the agents' past success rates in handling similar queries to make an informed decision.
+
+### Step 3: Information Retrieval
+
+The selected Document Agents spring into action, each focusing on its designated document partition. They utilize the power of [Vector Embeddings](/system-architecture/vector-embeddings) to perform efficient semantic searches and retrieve the most relevant information from their respective knowledge bases.
+
+The [Qdrant Vector Database](/system-architecture/qdrant-vector-database) plays a crucial role in this process, enabling lightning-fast retrieval of documents whose embeddings are most similar to the query's vector representation.
+
+### Step 4: Response Generation
+
+As the Document Agents gather pertinent information, they generate initial responses based on their findings. These responses are then sent back to the Master Agent for further processing and refinement.
+
+The Master Agent employs the [Reranking Module](/query-processing/reranking-module) to evaluate and adjust the relevance scores of the retrieved information based on the broader context of the query. This contextual reranking ensures that the most accurate and relevant information is prioritized in the final response.
+
+### Step 5: Response Synthesis
+
+With the reranked and refined information at hand, the Master Agent synthesizes a cohesive and comprehensive response to the user's query. It combines the insights and knowledge from multiple Document Agents, ensuring that the response covers all relevant aspects of the query.
+
+</Steps>
+
+<Callout>
+The query processing flow is designed to be highly efficient and scalable, capable of handling a large volume of queries simultaneously. The distributed nature of the Document Agents allows for parallel processing, while the strategic selection by the Query Planner ensures that only the most relevant agents are involved in each query, optimizing resource utilization.
+</Callout>
+
+By leveraging the power of advanced NLP, vector embeddings, and intelligent agent coordination, the Multi-Document Agent Q&A System delivers accurate and timely responses to user queries, making it an invaluable tool for knowledge management and information retrieval.

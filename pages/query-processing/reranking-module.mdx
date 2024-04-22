@@ -1,0 +1,57 @@
+import { Callout, Steps, Step } from "nextra-theme-docs";
+
+# Reranking Module
+
+The Reranking Module is a critical component in the query processing pipeline of the Multi-Document Agent Q&A System. Its primary role is to refine and adjust the relevance scores of the initial search results based on additional contextual information. By considering the context surrounding the query and the documents, the Reranking Module enhances the accuracy and precision of the retrieved information.
+
+## How it Works
+
+<Steps>
+
+### Step 1: Initial Scoring
+
+The [Master Agent](/query-processing/master-agent) receives the user's query and engages the [Query Planner](/query-processing/query-planner) to select the most relevant [Document Agents](/system-architecture/document-agents) based on the query's content and historical performance data. Each selected Document Agent then evaluates the query and provides an initial relevance score for its associated document.
+
+### Step 2: Contextual Reranking
+
+The Reranking Module takes the initial relevance scores and the corresponding document IDs as input. It then performs a more in-depth analysis of the query and the document contents to adjust the scores based on contextual factors. This process involves the following steps:
+
+1. **Query Analysis**: The Reranking Module examines the query to extract key information, such as the main intent, entities, and relationships.
+
+2. **Document Analysis**: It analyzes the content of each document to identify relevant passages, entities, and their relationships.
+
+3. **Relevance Adjustment**: Based on the query and document analysis, the Reranking Module adjusts the initial relevance scores. It considers factors such as semantic similarity, entity overlap, and relationship alignment between the query and the documents.
+
+### Step 3: Final Scoring
+
+After the contextual reranking process, the Reranking Module outputs the refined relevance scores for each document. These scores reflect a more accurate assessment of how well each document matches the user's query, taking into account the contextual information.
+
+</Steps>
+
+## Reranking Algorithm
+
+The Reranking Module employs a sophisticated algorithm to adjust the relevance scores based on the contextual analysis. The algorithm can be represented using the following mathematical notation:
+
+$Score_{reranked} = Score_{initial} + \alpha \times Similarity(Query, Document) + \beta \times EntityOverlap(Query, Document) + \gamma \times RelationshipAlignment(Query, Document)$
+
+Where:
+- $Score_{reranked}$ is the refined relevance score after reranking
+- $Score_{initial}$ is the initial relevance score provided by the Document Agent
+- $Similarity(Query, Document)$ measures the semantic similarity between the query and the document
+- $EntityOverlap(Query, Document)$ quantifies the overlap of entities between the query and the document
+- $RelationshipAlignment(Query, Document)$ assesses the alignment of relationships between the query and the document
+- $\alpha$, $\beta$, and $\gamma$ are weights assigned to each component of the reranking algorithm
+
+<Callout type="info">
+The weights ($\alpha$, $\beta$, and $\gamma$) in the reranking algorithm are dynamically adjusted using [Bootstrapped Few-Shot Learning](/optimization-techniques/bootstrapped-few-shot-learning) to optimize the reranking performance.
+</Callout>
+
+## Interaction with Other Components
+
+The Reranking Module interacts closely with other components of the Multi-Document Agent Q&A System:
+
+- It receives the initial relevance scores and document IDs from the [Master Agent](/query-processing/master-agent) after the [Query Planner](/query-processing/query-planner) selects the relevant [Document Agents](/system-architecture/document-agents).
+- It utilizes the [Vector Embeddings](/system-architecture/vector-embeddings) stored in the [Qdrant Vector Database](/system-architecture/qdrant-vector-database) to perform semantic similarity calculations and entity comparisons.
+- The weights in the reranking algorithm are optimized using [Bootstrapped Few-Shot Learning](/optimization-techniques/bootstrapped-few-shot-learning) and evaluated using the [Custom Metric: Mean Squared Error](/optimization-techniques/custom-metric-mean-squared-error).
+
+By refining the relevance scores based on contextual information, the Reranking Module significantly improves the quality and accuracy of the search results, enabling the Multi-Document Agent Q&A System to provide more precise and relevant answers to user queries.
