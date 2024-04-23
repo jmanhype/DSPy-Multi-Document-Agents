@@ -32,6 +32,7 @@
     "and the truly intended audience may differ based on additional context or project documentation not provided with just the source code."
   ],
   "dependencies": {
-    "nextra": "^2.13.4"
+    "nextra": "^2.13.4",
+    "nextra-theme-docs": "^2.13.4"
   }
 }
