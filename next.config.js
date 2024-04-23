@@ -1,9 +1,9 @@
-module.exports = {
-      ...require("nextra")({
-        theme: "nextra-theme-docs",
-        themeConfig: "./theme.config.jsx",
-        latex: true,
-        titleSuffix:
-        "Multi-Document Agent Q&A System",
-      })()
-    };
+const withMDX = require('@next/mdx')({
+  extension: /\.mdx?$/
+});
+
+module.exports = withMDX({
+  pageExtensions: ['js', 'jsx', 'md', 'mdx'],
+  reactStrictMode: true,
+  // any other general next.js configs
+});
