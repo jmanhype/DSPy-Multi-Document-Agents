@@ -41,7 +41,7 @@ pip install -r requirements.txt
 Run the system with:
 
 ```bash
-python mda_dspy.py
+python main.py
 ```
 
 ## Contributing
