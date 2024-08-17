@@ -1,0 +1,9 @@
+dspy
+llama_index
+qdrant_client
+unstructured
+transformers
+torch
+numpy
+weaviate-client
+cognee
