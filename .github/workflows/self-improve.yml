@@ -1,0 +1,63 @@
+name: Claude Code Self-Improve
+
+on:
+  schedule:
+    # Runs every Monday at 11:00 UTC (approximately 06:00 America/Chicago)
+    - cron: "0 11 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  self-improve:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run Claude Code Self-Improvement
+        uses: anthropics/claude-code-action@v1
+        with:
+          prompt: |
+            You are performing automated weekly maintenance on this repository. Please follow these steps:
+
+            1. **Project Summary**: Analyze the codebase and provide a one-paragraph summary of what this project does, its main technologies, and its purpose.
+
+            2. **Baseline Files Check**: Identify any missing baseline files that should exist in a well-maintained repository:
+               - README.md with a quickstart section
+               - LICENSE file
+               - SECURITY.md for security policy
+               - CODEOWNERS file
+               - CI/CD workflow files (.github/workflows/)
+
+            3. **Dependency and Build Issues**:
+               - Check for outdated or problematic dependencies
+               - Look for build configuration issues
+               - Identify any obvious bugs or code quality issues
+               - Propose the smallest safe improvements that don't change public APIs
+
+            4. **Implementation**:
+               - Implement fixes for documentation, CI/CD, or metadata issues
+               - Follow the guardrails in CLAUDE.md (if present)
+               - Make minimal changes with clear intent
+               - Create a pull request with:
+                 * Clear description of changes
+                 * Rationale for each change
+                 * A receipt line in this format: "🤖 Automated by Claude Code on YYYY-MM-DD"
+
+            **Important Constraints**:
+            - Only modify documentation, CI/CD configs, and metadata files
+            - Do NOT change application code unless there's an issue labeled 'ai-implement'
+            - Prefer minimal deltas - only fix what's clearly broken or missing
+            - Use conventional commit messages
+            - Always include a receipt line in PR descriptions
+
+            If no improvements are needed, simply report that the repository is in good shape.
+
+          claude_args: --max-turns 8
