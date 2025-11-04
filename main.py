@@ -1,20 +1,17 @@
 import logging
 import re
-import numpy as np
-import dspy
-from pathlib import Path
-from llama_index.readers.file import UnstructuredReader
-from llama_index.core import Document
-from dspy.teleprompt import BootstrapFewShotWithRandomSearch
 import os
-from qdrant_client import QdrantClient
-from dspy.retrieve.qdrant_rm import QdrantRM
 import uuid
 import traceback
-from unstructured.partition.auto import partition
-from transformers import AutoTokenizer, AutoModel
+from pathlib import Path
+from typing import List, Dict, Any, Optional, Tuple
+
+import numpy as np
 import torch
-from llama_index.core import VectorStoreIndex
+import dspy
+from transformers import AutoTokenizer, AutoModel
+from llama_index.readers.file import UnstructuredReader
+from llama_index.core import Document, VectorStoreIndex
 from llama_index.core.vector_stores.types import (
     DEFAULT_PERSIST_DIR,
     DEFAULT_PERSIST_FNAME,
@@ -25,11 +22,23 @@ from llama_index.core.vector_stores.types import (
     VectorStoreQueryMode,
     VectorStoreQueryResult,
 )
+from dspy.teleprompt import BootstrapFewShotWithRandomSearch
+from qdrant_client import QdrantClient
+from dspy.retrieve.qdrant_rm import QdrantRM
+from unstructured.partition.auto import partition
 # Initialize tokenizer and model for encoding queries
 tokenizer = AutoTokenizer.from_pretrained("sentence-transformers/all-MiniLM-L6-v2")
 model = AutoModel.from_pretrained("sentence-transformers/all-MiniLM-L6-v2")
 
-def encode_query(query):
+def encode_query(query: str) -> np.ndarray:
+    """Encode a query string into a vector embedding.
+
+    Args:
+        query: The query string to encode
+
+    Returns:
+        A numpy array representing the query embedding
+    """
     inputs = tokenizer(query, return_tensors="pt", padding=True, truncation=True)
     outputs = model(**inputs)
     # Use mean pooling to convert token embeddings to a single sentence embedding
@@ -66,18 +75,23 @@ claude = dspy.Claude(model="claude-3-haiku-20240307", api_key=api_key)
 dspy.settings.configure(lm=claude, rm=qdrant_retriever_model)
 
 # Function to load documents
-def load_documents(file_path):
+def load_documents(file_path: str) -> List[Document]:
+    """Load documents from a file using unstructured partition.
+
+    Args:
+        file_path: Path to the file to load
+
+    Returns:
+        List of Document objects with text and metadata
+    """
     logging.info(f"Loading documents from: {file_path}")
     elements = partition(filename=file_path)
     docs = [Document(text=str(el), metadata={"source": file_path}) for el in elements]
     logging.info(f"Loaded {len(docs)} documents from {file_path}")
     return docs
 
-import uuid
-import logging
-from llama_index.core.schema import TextNode  # Assuming TextNode is the correct instantiable class
+from llama_index.core.schema import TextNode
 from llama_index.embeddings.openai import OpenAIEmbedding
-from llama_index.core import VectorStoreIndex
 from llama_index.core.data_structs.data_structs import IndexDict
 
 # Initialize the VectorStoreIndex with the OpenAIEmbedding model
@@ -87,7 +101,20 @@ vector_store = VectorStoreIndex(
     index_struct=IndexDict()
 )
 
-def add_documents_to_collection(documents, qdrant_client, collection_name, vector_store):
+def add_documents_to_collection(
+    documents: List[Document],
+    qdrant_client: QdrantClient,
+    collection_name: str,
+    vector_store: VectorStoreIndex
+) -> None:
+    """Add documents to Qdrant vector database collection.
+
+    Args:
+        documents: List of documents to add
+        qdrant_client: Qdrant client instance
+        collection_name: Name of the collection
+        vector_store: Vector store index for embeddings
+    """
     nodes = [TextNode(text=doc.text) for doc in documents]  # Create TextNode instances for each document
     embedded_nodes = vector_store._get_node_with_embedding(nodes)  # Use the vector store to process nodes and retrieve embeddings
 
@@ -118,13 +145,8 @@ def add_documents_to_collection(documents, qdrant_client, collection_name, vecto
     except Exception as e:
         logging.error(f"Failed to add documents: {e}")
 
-# Example usage
-documents = load_documents("C:/Users/strau/storm/docs.llamaindex.ai/en/latest.md")
-qdrant_client = QdrantClient(host="localhost", port=6333)
-collection_name = "llama_index_doc"
-
-# Correct function call including vector_store
-add_documents_to_collection(documents, qdrant_client, collection_name, vector_store)
+# Example usage - This will be executed in __main__ block
+# Documents should be loaded and processed in the main execution block
 
 
 class RerankingSignature(dspy.Signature):
@@ -141,24 +163,24 @@ class RerankModule(dspy.Module):
 
     def forward(self, document_id, query, initial_score):
         context = self.retrieve(query).passages
-        print(f"Initial Score Type: {type(initial_score)}")  # Debugging line
         reranked_score = initial_score + len(context)  # Simplistic reranking logic
         return reranked_score
 
 
-import numpy as np
+def calculate_ndcg(
+    predicted_relevance: List[float],
+    true_relevance: List[float],
+    k: int = 10
+) -> float:
+    """Calculate Normalized Discounted Cumulative Gain (NDCG) at rank k.
 
-def calculate_ndcg(predicted_relevance, true_relevance, k=10):
-    """
-    Calculate Normalized Discounted Cumulative Gain (NDCG) at rank k.
-    
     Args:
-        predicted_relevance (list): List of predicted relevance scores.
-        true_relevance (list): List of true relevance scores.
-        k (int): The rank position to calculate NDCG for (default: 10).
-    
+        predicted_relevance: List of predicted relevance scores
+        true_relevance: List of true relevance scores
+        k: The rank position to calculate NDCG for (default: 10)
+
     Returns:
-        float: NDCG score at rank k.
+        NDCG score at rank k
     """
     if len(predicted_relevance) == 0 or len(true_relevance) == 0:
         return 0.0
@@ -269,29 +291,19 @@ class RerankingOptimizer(dspy.Module):
                 yield example
 
         try:
-            print("Starting optimization...")
+            logging.info("Starting optimization...")
             optimized_program = self.teleprompter.compile(
                 student=self.rerank_module,
                 trainset=trainset_generator()
             )
-            print("Optimization completed.")
+            logging.info("Optimization completed.")
             return optimized_program
         except ZeroDivisionError as e:
             logging.error(f"Division by zero error during optimization: {str(e)}")
-            # Add additional debugging or error handling code here
             return None
         except Exception as e:
             logging.error(f"Failed to optimize reranking: {str(e)}")
-            # Add additional debugging or error handling code here
             return None
-        
-import dspy
-import logging
-import dspy
-import logging
-
-import dspy
-import logging
 
 
 
@@ -310,14 +322,6 @@ class QueryPlanner(dspy.Module):
         context = f"Query: {query}\nAgents: {agent_ids}\nHistorical Data: {historical_data if historical_data else 'No historical data'}"
         prediction = self.process_query(query=query, agent_ids=agent_ids, historical_data=historical_data)
         return prediction.selected_agents if hasattr(prediction, 'selected_agents') else []
-    
-import numpy as np
-from transformers import AutoTokenizer, AutoModel
-import torch
-
-# Initialize tokenizer and model for encoding queries
-tokenizer = AutoTokenizer.from_pretrained("sentence-transformers/all-MiniLM-L6-v2")
-model = AutoModel.from_pretrained("sentence-transformers/all-MiniLM-L6-v2")
 
 class DocumentAgent(dspy.Module):
     def __init__(self, document_id, content, qdrant_client, collection_name):
@@ -590,7 +594,8 @@ if __name__ == "__main__":
     logging.info("Starting the document processing application.")
 
     try:
-        file_path = "C:/Users/strau/storm/docs.llamaindex.ai/en/latest.md"
+        # Load file path from environment variable or use default
+        file_path = os.environ.get("DOCUMENT_PATH", "docs/latest.md")
         documents = load_documents(file_path)
         
         if not documents:
